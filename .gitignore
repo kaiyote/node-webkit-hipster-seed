@@ -1,5 +1,5 @@
 **/.DS_Store
-nbproject
+node-webkit-stylish-seed
 manifest.mf
 build.xml
 
@@ -7,17 +7,16 @@ node_modules
 
 .project
 .settings
-.idea/*
+.idea
 
-# _public
-node_modules/*
+_public/**/*
+node_modules
 npm-debug.log
 
 test/test-results.xml
 
 # Bower stuff.
-bower_components/
+bower_components
 
 # build stuff.
 dist
-dist/*

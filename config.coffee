@@ -2,7 +2,7 @@ exports.config =
   # See docs at http://brunch.readthedocs.org/en/latest/config.html.
   conventions:
     assets:  /^app[\/\\]+assets[\/\\]+/
-    ignored: /^(bower_components[\/\\]+bootstrap-less(-themes)?|app[\/\\]+styles[\/\\]+overrides|(.*?[\/\\]+)?[_]\w*)/
+    ignored: /^(app[\/\\]+styles[\/\\]+overrides|(.*?[\/\\]+)?[_]\w*)/
   modules:
     definition: false
     wrapper: false
@@ -12,14 +12,15 @@ exports.config =
     javascripts:
       joinTo:
         'js/app.js': /^app/
-        'js/vendor.js': /^(bower_components|vendor)/
+        'js/vendor.js': /^bower_components/
 
     stylesheets:
       joinTo:
         'css/app.css': /^(app|vendor|bower_components)/
       order:
-        before: [
-          'app/styles/app.less'
+        # make sure custom css comes after bootstrap, etc
+        after: [
+          'app/styles/app.styl'
         ]
 
     templates:

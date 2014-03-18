@@ -1,18 +1,12 @@
 'use strict'
 
-### Directives ###
-
-# register the module with Angular
-angular.module('app.directives', [
-  # require the 'app.service' module
+angular.module 'app.directives', [
   'app.services'
-])
+]
 
-.directive('appVersion', [
+.directive 'appVersion', [
   'version'
-
-(version) ->
-
-  (scope, elm, attrs) ->
-    elm.text(version)
-])
+  (version) ->
+    (scope, elm, attrs) ->
+      elm.text version
+]
