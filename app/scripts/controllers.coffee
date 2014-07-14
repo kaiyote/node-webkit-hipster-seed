@@ -1,30 +1,31 @@
 'use strict'
 
-TodoModel = [
-  text: 'learn Mithril'
-  done: m.prop true
-,
-  text: 'build a Mithril app'
-  done: m.prop false
-]
-
 TodoCtrl =
   controller: class
     constructor: ->
-      @todos = TodoModel
+      @todos = [
+        text: 'learn Mithril'
+        done: m.prop yes
+      ,
+        text: 'build a Mithril app'
+        done: m.prop no
+      ]
       @todoText = m.prop ''
       
-    addTodo: ->
+    addTodo: (evt) ->
       unless do @todoText is ''
         @todos.push
           text: do @todoText
-          done: m.prop false
+          done: m.prop no
         @todoText ''
+      do evt?.preventDefault
+      do evt?.stopPropagation
       return
       
     remaining: ->
       count = 0
-      count++ if todo.done for todo in @todos
+      for todo in @todos
+        if !(do todo.done) then count++
       count
       
     archive: ->
@@ -59,7 +60,7 @@ TodoCtrl =
       m 'input.btn.btn-primary',
         type: 'submit'
         value: 'add'
-        onclick: -> do ctrl.addTodo
+        onclick: (evt) -> ctrl.addTodo evt
     ]
   ]
   
@@ -124,10 +125,16 @@ AppCtrl =
         , 'view2'
       ]
     ]
-    m '.container', [
-      m '#routeHolder', config: ctrl.init
-    ]
+    m '.container', m '#routeHolder', config: ctrl.init
     m 'footer.footer', m '.container', m 'p', m 'small', m 'a',
       href: 'https://github.com/kaiyote/node-webkit-stylish-seed'
     , 'node-webkit-stylish-seed | source'
   ]
+
+# expose the controllers to Node for testing with node-unit
+if typeof module isnt 'undefined'
+  module.exports =
+    Ctrl1: Ctrl1
+    Ctrl2: Ctrl2
+    TodoCtrl: TodoCtrl
+    AppCtrl: AppCtrl
