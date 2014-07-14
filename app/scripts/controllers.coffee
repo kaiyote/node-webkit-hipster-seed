@@ -1,72 +1,133 @@
 'use strict'
 
-angular.module 'app.controllers', []
-.controller 'AppCtrl', [
-  '$scope'
-  '$location'
-  '$resource'
-  '$rootScope'
-  ($scope, $location, $resource, $rootScope) ->
-    # Uses the url to determine if the selected
-    # menu item should have the class active.
-    $scope.$location = $location
-    $scope.$watch '$location.path()', (path) ->
-      $scope.activeNavId = path || '/'
-  
-    # getClass compares the current url with the id.
-    # If the current url starts with the id it returns 'active'
-    # otherwise it will return '' an empty string. E.g.
-    #
-    #   # current url = '/products/1'
-    #   getClass('/products') # returns 'active'
-    #   getClass('/orders') # returns ''
-    #
-    $scope.getClass = (id) ->
-      if $scope.activeNavId.substring(0, id.length) == id
-        return 'active'
-      else
-        return ''
+TodoModel = [
+  text: 'learn Mithril'
+  done: m.prop true
+,
+  text: 'build a Mithril app'
+  done: m.prop false
 ]
 
-.controller 'MyCtrl1', [
-  '$scope'
-  ($scope) ->
-    $scope.onePlusOne = 2
-]
-
-.controller 'MyCtrl2', [
-  '$scope'
-  ($scope) ->
-    $scope
-]
-
-.controller 'TodoCtrl', [
-  '$scope'
-  ($scope) ->
-    $scope.todos = [
-      text: "learn angular"
-      done: true
-    ,
-      text: "build an angular app"
-      done: false
-    ]
-  
-    $scope.addTodo = ->
-      $scope.todos.push
-        text: $scope.todoText
-        done: false
-      $scope.todoText = ""
-  
-    $scope.remaining = ->
+TodoCtrl =
+  controller: class
+    constructor: ->
+      @todos = TodoModel
+      @todoText = m.prop ''
+      
+    addTodo: ->
+      unless do @todoText is ''
+        @todos.push
+          text: do @todoText
+          done: m.prop false
+        @todoText ''
+      return
+      
+    remaining: ->
       count = 0
-      angular.forEach $scope.todos, (todo) ->
-        count += (if todo.done then 0 else 1)
+      count++ if todo.done for todo in @todos
       count
+      
+    archive: ->
+      oldTodos = @todos
+      @todos = []
+      for todo in oldTodos
+        @todos.push todo unless do todo.done
+      return
+      
+  view: (ctrl) -> [
+    m 'h2', 'Todo'
+    m 'span', do ctrl.remaining + ' of ' + ctrl.todos.length + ' remaining [ '
+    m 'a',
+      onclick: -> do ctrl.archive
+    , 'archive'
+    m 'span', ' ]'
+    m 'ul.list-unstyled', ctrl.todos.map (todo) ->
+      m 'li', m 'label.checkbox.inline', [
+        m 'input',
+          type: 'checkbox'
+          onchange: m.withAttr 'checked', todo.done
+          checked: do todo.done
+        m "span.done#{do todo.done}", todo.text
+      ]
+    m 'form.form-inline', m 'p', [
+      m 'input',
+        type: 'text'
+        size: 30
+        placeholder: 'add new todo here'
+        onchange: m.withAttr 'value', ctrl.todoText
+        value: do ctrl.todoText
+      m 'input.btn.btn-primary',
+        type: 'submit'
+        value: 'add'
+        onclick: -> do ctrl.addTodo
+    ]
+  ]
   
-    $scope.archive = ->
-      oldTodos = $scope.todos
-      $scope.todos = []
-      angular.forEach oldTodos, (todo) ->
-        $scope.todos.push todo  unless todo.done
-]
+Ctrl1 =
+  controller: ->
+    onePlusOne: 2
+  view: (ctrl) ->
+    m 'p', 'This is the partial for view 1.'
+    
+Ctrl2 =
+  controller: ->
+  view: (ctrl) ->
+    m 'p', 'This is the partial for view 2.'
 
+AppCtrl =
+  controller: class
+    constructor: ->
+      m.route.mode = 'hash'
+      
+    init: (elm, isInit, context) ->
+      return if isInit
+      m.route elm, '/todo',
+        '/todo': TodoCtrl
+        '/route1': Ctrl1
+        '/route2': Ctrl2
+      
+    getClass: (route) ->
+      return 'active' if do m.route is route
+      return ''
+    
+  view: (ctrl) -> [
+    m 'nav.navbar.navbar-default', m '.container', [
+      m '.navbar-header', [
+        m 'button.navbar-toggle',
+          'data-toggle': 'collapse'
+          'data-target': '#bs-example-navbar-collapse-1'
+        , [
+            m 'span.sr-only', 'Toggle navigation'
+            m 'span.icon-bar'
+            m 'span.icon-bar'
+            m 'span.icon-bar'
+        ]
+        m 'a.navbar-brand',
+          href: '#'
+        , 'Node Webkit Stylish Seed'
+      ]
+      m '.collapse.navbar-collapse#bs-example-navbar-collapse-1', m 'ul.nav.navbar-nav', [
+        m "li",
+          'class': ctrl.getClass '/todo'
+        , m 'a',
+          onclick: -> m.route '/todo'
+        , 'todo'
+        m "li",
+          'class': ctrl.getClass '/route1'
+        , m 'a',
+          onclick: -> m.route '/route1'
+        , 'view1'
+        m "li",
+          'class': ctrl.getClass '/route2'
+        , m 'a',
+          onclick: -> m.route '/route2'
+        , 'view2'
+      ]
+    ]
+    m '.container', [
+      m '#routeHolder', config: ctrl.init
+    ]
+    m 'footer.footer', m '.container', m 'p', m 'small', m 'a',
+      href: 'https://github.com/kaiyote/node-webkit-stylish-seed'
+    , 'node-webkit-stylish-seed | source'
+  ]
