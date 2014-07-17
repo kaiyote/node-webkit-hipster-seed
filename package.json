@@ -11,8 +11,8 @@
   "scripts": {
     "compiler": "brunch watch",
     "mock": "brunch watch -P",
-    "test": "grunt nodeunit",
-    "e2e": "",
+    "test": "grunt nodeunit:unit",
+    "e2e": "grunt nodeunit:e2e",
     "app": "nodewebkit _public",
     "deploy": "grunt"
   },
@@ -29,6 +29,7 @@
     "jaded-brunch": "^1.7.11",
     "javascript-brunch": "^1.7.1",
     "nodewebkit": "^0.9.2",
+    "selenium-webdriver": "^2.42.1",
     "stylus-brunch": "^1.8.1",
     "uglify-js-brunch": "^1.7.7"
   },

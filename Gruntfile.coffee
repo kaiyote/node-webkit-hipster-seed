@@ -2,7 +2,8 @@ module.exports = (grunt) ->
   grunt.initConfig
     pkg: grunt.file.readJSON '_public/package.json'
     nodeunit:
-      all: ['test/unit/**/*.coffee']
+      unit: ['test/unit/**/*.tests.coffee']
+      e2e: ['test/e2e/**/*.tests.coffee']
       options:
         reporter: 'nested'
     nodewebkit:
