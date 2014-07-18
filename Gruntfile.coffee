@@ -21,3 +21,6 @@ module.exports = (grunt) ->
   grunt.loadNpmTasks 'grunt-contrib-nodeunit'
 
   grunt.registerTask 'default', ['nodewebkit']
+  grunt.registerTask 'unit', ['nodeunit:unit']
+  grunt.registerTask 'download-chromedriver', -> require('./test/setup') grunt, do @async
+  grunt.registerTask 'e2e', ['download-chromedriver', 'nodeunit:e2e']
