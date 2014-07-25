@@ -8,7 +8,7 @@ Bootstrap a crossplatform Desktop Application using tools you probably never hea
 
 If you're familiar with the node.js world, this sketch should get you informed, if not: an [explanation](https://github.com/kaiyote/node-webkit-stylish-seed/wiki/how-it-works) is placed [in the wiki](https://github.com/kaiyote/node-webkit-stylish-seed/wiki).
 
-![How NWHS works](https://raw.github.com/Anonyfox/node-webkit-hipster-seed/master/docs/nwss-arch.png)
+![How NWHS works](https://raw.github.com/kaiyote/node-webkit-stylish-seed/master/docs/nwss-arch.png)
 
   - `brunch new https://github.com/kaiyote/node-webkit-stylish-seed MyApp` to get you started.
   - `npm run compiler` assembles your application into `/_public` and watches file changes (no minification).
