@@ -33,14 +33,17 @@ download = (target, url, dest, options, done, error) ->
   d.on 'close', -> process.nextTick -> do done
 
 getChromeDriver = (done) ->
-  fs.stat path.join(dest, 'chromedriver' + if process.platform is 'win32' then '.exe' else ''), (err) ->
+  exename = 'chromedriver' + if process.platform is 'win32' then '.exe' else ''
+  fs.stat path.join(dest, exename), (err) ->
     if err
       url = do getChromeDriverUrl
       if url
         download 'chromedriver', url, dest,
           extract: yes
           strip: 1
-        , done
+        , ->
+          fs.chmod path.join(dest, exename), 0o755, ->
+            do done
         , (error) ->
           done error
       else
