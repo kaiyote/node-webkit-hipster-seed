@@ -61,7 +61,30 @@ getSelenium = (done) ->
     else
       do done
       
+adjustNightwatchForOS = (done) ->
+  fs.readFile 'nightwatch.json',
+    encoding: 'utf8'
+  , (err, data) ->
+    if err
+      done err
+    config = JSON.parse data
+    if process.platform is 'win32' and config.selenium.cli_args['webdriver.chrome.driver'] isnt 'test/chromedriver.exe'
+      config.selenium.cli_args['webdriver.chrome.driver'] = 'test/chromedriver.exe'
+      config.test_settings.default.desiredCapabilities.chromeOptions.binary = 'node_modules/nodewebkit/nodewebkit/nw.exe'
+      fs.writeFile 'nightwatch.json', JSON.stringify(config, null, 2), (err) ->
+        done err if err
+        do done
+    else if process.platform isnt 'win32' and config.selenium.cli_args['webdriver.chrome.driver'] is 'test/chromedriver.exe'
+      config.selenium.cli_args['webdriver.chrome.driver'] = 'test/chromedriver'
+      config.test_settings.default.desiredCapabilities.chromeOptions.binary = 'node_modules/nodewebkit/nodewebkit/nw'
+      fs.writeFile 'nightwatch.json', JSON.stringify(config, null, 2), (err) ->
+        done err if err
+        do done
+    else
+      do done
+      
 async.waterfall [
   getChromeDriver
   getSelenium
+  adjustNightwatchForOS
 ], -> require 'nightwatch/bin/runner.js'
