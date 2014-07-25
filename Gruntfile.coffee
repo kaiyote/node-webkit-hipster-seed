@@ -16,7 +16,7 @@ module.exports = (grunt) ->
         linux64: false
       src: './_public/**/*'
     coffee:
-      all:
+      test:
         options:
           bare: yes
           sourceMap: no
@@ -24,7 +24,7 @@ module.exports = (grunt) ->
         src: ['test/e2e/**/*.coffee']
         ext: '.js'
     clean:
-      all:
+      test:
         src: ['test/e2e/**/*.js']
 
   grunt.loadNpmTasks 'grunt-node-webkit-builder'

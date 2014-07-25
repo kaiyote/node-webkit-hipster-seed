@@ -12,7 +12,7 @@
     "compiler": "brunch watch",
     "mock": "brunch watch -P",
     "test": "grunt nodeunit",
-    "e2e": "grunt coffee && coffee nightwatch.coffee && grunt clean",
+    "e2e": "grunt coffee:test && coffee nightwatch.coffee && grunt clean:test",
     "app": "nodewebkit _public",
     "deploy": "grunt"
   },
