@@ -1,55 +1,77 @@
-"use strict"
+path = require 'path'
+baseurl = 'file:///' + path.join do process.cwd, '_public', 'index.html'
 
-# http://docs.angularjs.org/guide/dev_guide.e2e-testing 
-describe "my app", ->
-  beforeEach ->
-    browser().navigateTo "/"
-
-  it "should automatically redirect to /todo when location hash/fragment is empty", ->
-    expect(browser().location().url()).toBe "/todo"
-
-  it "should navigate to /view1 when the View 1 link in nav is clicked", ->
-    element(".nav a[href=\"#/view1\"]").click()
-    expect(browser().location().url()).toBe "/view1"
-
-  describe "todo", ->
-
-    it "should list 2 items", ->
-      expect(repeater("[ng-view] ul li").count()).toEqual 2
-
-    it "should display checked items with a line-through", ->
-      expect(element("[ng-view] ul li input:checked + span").css("text-decoration")).toEqual "line-through"
-
-    it "should sync done status with checkbox state", ->
-      element("[ng-view] ul li input:not(:checked)").click()
-      expect(element("[ng-view] ul li span").attr("class")).toEqual "donetrue"
-      element("[ng-view] ul li input:checked").click()
-      expect(element("[ng-view] ul li span").attr("class")).toEqual "donefalse"
-
-    it "should remove checked items when the archive link is clicked", ->
-      element("[ng-view] a[ng-click=\"archive()\"]").click()
-      expect(repeater("[ng-view] ul li").count()).toEqual 1
-
-    it "should add a newly submitted item to the end of the list and empty the text input", ->
-      newItemLabel = "test newly added item"
-      input("todoText").enter newItemLabel
-      element("[ng-view] input[type=\"submit\"]").click()
-      expect(repeater("[ng-view] ul li").count()).toEqual 3
-      expect(element("[ng-view] ul li:last span").text()).toEqual newItemLabel
-      expect(input("todoText").val()).toEqual ""
-
-
-  describe "view1", ->
-    beforeEach ->
-      browser().navigateTo "#/view1"
-
-    it "should render view1 when user navigates to /view1", ->
-      expect(element("[ng-view] p:first").text()).toMatch /partial for view 1/
-
-
-  describe "view2", ->
-    beforeEach ->
-      browser().navigateTo "#/view2"
-
-    it "should render view2 when user navigates to /view2", ->
-      expect(element("[ng-view] p:first").text()).toMatch /partial for view 2/
+module.exports =
+  setUp: (browser) ->
+    browser
+      .url baseurl
+      .execute 'window.resizeTo(850, 850);'
+  
+  'Should auto-load the Todo view when no fragment is passed in': (browser) ->
+    browser
+      .assert.urlContains '#/todo'
+      
+  'Should navigate to /route1 when the "view1" link is clicked': (browser) ->
+    browser
+      .useXpath()
+      .click "//a[text()='view1']"
+      .pause 1000
+      .useCss()
+      .assert.urlContains '#/route1'
+      
+  'Todo: Should list 2 items': (browser) ->
+    browser
+      .elements 'css selector', '.list-unstyled li', (results) ->
+        @assert.equal 2, results.value.length
+          
+  'Todo: Should display checked items with a line-through': (browser) ->
+    browser
+      .assert.cssClassPresent 'ul li input:checked + span', 'donetrue'
+      
+  'Todo: Should sync done status with checkbox state': (browser) ->
+    browser
+      .click 'ul li input:not(:checked)'
+      .pause 1000
+      .assert.cssClassPresent 'ul li input:focus + span', 'donetrue'
+      .click 'ul li input:checked'
+      .pause 1000
+      .assert.cssClassPresent 'ul li input:focus + span', 'donefalse'
+      
+  'Todo: Should remove checked items when the archive link is clicked': (browser) ->
+    browser
+      .useXpath()
+      .click "//a[text()='archive']"
+      .pause 1000
+      .useCss()
+      .elements 'css selector', '.list-unstyled li', (results) ->
+        @assert.equal 1, results.value.length
+      
+  'Todo: Should add a newly submitted item to the end of the list and empty the text input': (browser) ->
+    newItemLabel = 'new todo item'
+    
+    browser
+      .setValue 'input[type=text]', newItemLabel
+      .click 'input[type=submit]'
+      .pause 1000
+      .elements 'css selector', '.list-unstyled li', (results) ->
+        @assert.equal 3, results.value.length
+      .assert.containsText '.list-unstyled li:nth-last-child(1) span', newItemLabel
+      .assert.containsText 'input[type=text]', ''
+      
+  'View 1: Should render View 1 template when user navigates to view1': (browser) ->
+    browser
+      .useXpath()
+      .click "//a[text()='view1']"
+      .pause 1000
+      .useCss()
+      .assert.containsText 'p:first-child', 'This is the partial for view 1.'
+      
+  'View 2: Should render View 2 template when user navigates to view2': (browser) ->
+    do browser
+      .useXpath()
+      .click "//a[text()='view2']"
+      .pause 1000
+      .useCss()
+      .assert.urlContains '#/route2'
+      .assert.containsText 'p:first-child', 'This is the partial for view 2.'
+      .end

@@ -3,7 +3,6 @@ module.exports = (grunt) ->
     pkg: grunt.file.readJSON '_public/package.json'
     nodeunit:
       unit: ['test/unit/**/*.tests.coffee']
-      e2e: ['test/e2e/**/*.tests.coffee']
       options:
         reporter: 'nested'
     nodewebkit:
@@ -16,11 +15,20 @@ module.exports = (grunt) ->
         linux32: false
         linux64: false
       src: './_public/**/*'
+    coffee:
+      all:
+        options:
+          bare: yes
+          sourceMap: no
+        expand: yes
+        src: ['test/e2e/**/*.coffee']
+        ext: '.js'
+    clean:
+      all:
+        src: ['test/e2e/**/*.js']
 
   grunt.loadNpmTasks 'grunt-node-webkit-builder'
   grunt.loadNpmTasks 'grunt-contrib-nodeunit'
-
+  grunt.loadNpmTasks 'grunt-contrib-coffee'
+  grunt.loadNpmTasks 'grunt-contrib-clean'
   grunt.registerTask 'default', ['nodewebkit']
-  grunt.registerTask 'unit', ['nodeunit:unit']
-  grunt.registerTask 'download-chromedriver', -> require('./test/setup') grunt, do @async
-  grunt.registerTask 'e2e', ['download-chromedriver', 'nodeunit:e2e']

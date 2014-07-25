@@ -20,3 +20,9 @@ bower_components
 
 # build stuff.
 dist
+
+# testing stuff
+selenium-debug.log
+test/chromedriver.*
+test/selenium*.*
+tests_output
