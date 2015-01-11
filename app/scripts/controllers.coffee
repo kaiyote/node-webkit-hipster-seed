@@ -1,5 +1,3 @@
-'use strict'
-
 TodoCtrl =
   controller: class
     constructor: ->
@@ -11,7 +9,7 @@ TodoCtrl =
         done: m.prop no
       ]
       @todoText = m.prop ''
-      
+
     addTodo: (evt) ->
       unless do @todoText is ''
         @todos.push
@@ -21,28 +19,28 @@ TodoCtrl =
       do evt?.preventDefault
       do evt?.stopPropagation
       return
-      
+
     remaining: ->
       count = 0
       for todo in @todos
-        if !(do todo.done) then count++
+        if not (do todo.done) then count++
       count
-      
+
     archive: ->
       oldTodos = @todos
       @todos = []
       for todo in oldTodos
         @todos.push todo unless do todo.done
       return
-      
+
   view: (ctrl) -> [
     m 'h2', 'Todo'
-    m 'span', do ctrl.remaining + ' of ' + ctrl.todos.length + ' remaining [ '
+    m 'span', do ctrl.remaining + ' of ' + ctrl.todos?.length + ' remaining [ '
     m 'a',
       onclick: -> do ctrl.archive
     , 'archive'
     m 'span', ' ]'
-    m 'ul.list-unstyled', ctrl.todos.map (todo) ->
+    m 'ul.list-unstyled', ctrl.todos?.map (todo) ->
       m 'li', m 'label.checkbox.inline', [
         m 'input',
           type: 'checkbox'
@@ -63,15 +61,14 @@ TodoCtrl =
         onclick: (evt) -> ctrl.addTodo evt
     ]
   ]
-  
+
 Ctrl1 =
-  controller: ->
-    onePlusOne: 2
+  controller: -> onePlusOne: 2
   view: (ctrl) ->
     m 'p', 'This is the partial for view 1.'
-    
+
 Ctrl2 =
-  controller: ->
+  controller: -> a: 'b'
   view: (ctrl) ->
     m 'p', 'This is the partial for view 2.'
 
@@ -79,20 +76,22 @@ AppCtrl =
   controller: class
     constructor: ->
       m.route.mode = 'hash'
-      
+
     init: (elm, isInit, context) ->
       return if isInit
-      m.route elm, '/todo',
-        '/todo': TodoCtrl
-        '/route1': Ctrl1
-        '/route2': Ctrl2
-      
+      setTimeout ->
+        m.route elm, '/todo',
+          '/todo': TodoCtrl
+          '/route1': Ctrl1
+          '/route2': Ctrl2
+      , 100
+
     getClass: (route) ->
       return 'active' if do m.route is route
       return ''
-    
+
   view: (ctrl) -> [
-    m 'nav.navbar.navbar-default', m '.container', [
+    m '.nav.navbar.navbar-default', m '.container', [
       m '.navbar-header', [
         m 'button.navbar-toggle',
           'data-toggle': 'collapse'
@@ -108,33 +107,32 @@ AppCtrl =
         , 'Node Webkit Stylish Seed'
       ]
       m '.collapse.navbar-collapse#bs-example-navbar-collapse-1', m 'ul.nav.navbar-nav', [
-        m "li",
+        m 'li',
           'class': ctrl.getClass '/todo'
         , m 'a',
           onclick: -> m.route '/todo'
         , 'todo'
-        m "li",
+        m 'li',
           'class': ctrl.getClass '/route1'
         , m 'a',
           onclick: -> m.route '/route1'
         , 'view1'
-        m "li",
+        m 'li',
           'class': ctrl.getClass '/route2'
         , m 'a',
           onclick: -> m.route '/route2'
         , 'view2'
       ]
     ]
-    m '.container', m '#routeHolder', config: ctrl.init
+    m '.container', m '#routeHolder', {config: ctrl.init}
     m 'footer.footer', m '.container', m 'p', m 'small', m 'a',
       href: 'https://github.com/kaiyote/node-webkit-stylish-seed'
     , 'node-webkit-stylish-seed | source'
   ]
 
 # expose the controllers to Node for testing with node-unit
-if typeof module isnt 'undefined'
-  module.exports =
-    Ctrl1: Ctrl1
-    Ctrl2: Ctrl2
-    TodoCtrl: TodoCtrl
-    AppCtrl: AppCtrl
+module?.exports =
+  Ctrl1: Ctrl1
+  Ctrl2: Ctrl2
+  TodoCtrl: TodoCtrl
+  AppCtrl: AppCtrl
