@@ -19,7 +19,8 @@ test/test-results.xml
 bower_components
 
 # build stuff.
-dist
+build
+cache
 
 # testing stuff
 selenium-debug.log
