@@ -1,6 +1,8 @@
 node-webkit-stylish-seed
 ========================
 
+###This repo is currently in a state of flux. If you install it right now, none of the stuff about brunch will function, very few of the test commands will work, and I am not responsible for any damage caused to your computer or your psyche.
+
 NWHS with Stylus instead of Less. Get rid of all the curly braces!
 ***
 
